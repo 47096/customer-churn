@@ -12,16 +12,16 @@ The scripts progress from simple to complex, each building on the last:
 
 | # | Script | What It Does |
 |---|--------|-------------|
-| 1 | `tidymodels 001.R` | Decision tree on diabetes data — baseline |
-| 2 | `tidymodels 002.R` | Decision tree on bank churners — same model, bigger dataset |
-| 3 | `tidymodels 003.R` | Decision tree + hyperparameter tuning + 3-fold CV |
-| 4 | `tidymodels 004.R` | XGBoost + 5-fold CV — direct comparison against decision tree |
-| 5 | `tidymodels 005.R` | Bagged trees (100 bootstrap samples) — middle ground |
-| 6 | `tidymodels 006.R` | Head-to-head: Decision Tree vs Random Forest vs XGBoost |
+| 1 | `01-baseline-dtree-diabetes.R` | Decision tree on diabetes data — baseline |
+| 2 | `02-dtree-churn.R` | Decision tree on bank churners — same model, bigger dataset |
+| 3 | `03-dtree-tuned.R` | Decision tree + hyperparameter tuning + 3-fold CV |
+| 4 | `04-xgboost.R` | XGBoost + 5-fold CV — direct comparison against decision tree |
+| 5 | `05-bagged-trees.R` | Bagged trees (100 bootstrap samples) — middle ground |
+| 6 | `06-model-comparison.R` | Head-to-head: Decision Tree vs Random Forest vs XGBoost |
 
 ## Results
 
-### Churn Prediction — Model Comparison (Script 006)
+### Churn Prediction — Model Comparison (06-model-comparison)
 
 | Model | Accuracy | Precision | Recall | F1 | AUC | Log Loss |
 |-------|----------|-----------|--------|-----|-----|----------|
@@ -32,7 +32,7 @@ The scripts progress from simple to complex, each building on the last:
 ### Key Findings
 
 - **XGBoost wins** across every metric — accuracy, precision, recall, F1, AUC, and log loss
-- **Tuning helps**: tuned decision tree (Script 003) improved accuracy from 0.934 → 0.943 via hyperparameter search
+- **Tuning helps**: tuned decision tree (03-dtree-tuned) improved accuracy from 0.934 → 0.943 via hyperparameter search
 - **Ensembles beat single trees**: bagged trees (AUC 0.887) outperform a single tree (0.935), but XGBoost (0.990) dominates both
 - **`total_trans_amt`** is the most important feature across all models — recent transaction behaviour is the strongest predictor of churn
 - **Cross-validation** gives more reliable AUC estimates than a single train/test split
@@ -40,13 +40,13 @@ The scripts progress from simple to complex, each building on the last:
 ## Setup
 
 ```bash
-git clone https://github.com/wsamuelw/tidymodels.git
-cd tidymodels
+git clone https://github.com/47096/customer-churn.git
+cd customer-churn
 ```
 
 ```r
 install.packages(c("tidymodels", "rpart.plot", "vip", "baguette", "xgboost"))
-source("tidymodels 006.R")  # the final comparison
+source("06-model-comparison.R")  # the final comparison
 ```
 
 ## Data
