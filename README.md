@@ -62,12 +62,11 @@ Which customers will still be `still_customer` — and which model finds them be
 
 | Step | Script | What it tests |
 |------|--------|----------------|
-| 1 | `01-baseline-dtree-diabetes.R` | Decision tree baseline (warm-up) |
-| 2 | `02-dtree-churn.R` | Same model on bank churners |
-| 3 | `03-dtree-tuned.R` | Tuning + 3-fold CV — how much does tuning buy? |
-| 4 | `04-xgboost.R` | XGBoost + 5-fold CV |
-| 5 | `05-bagged-trees.R` | Bagging — middle ground |
-| 6 | `06-model-comparison.R` | Tree vs Random Forest vs XGBoost |
+| 1 | `01-dtree-churn.R` | Single decision tree — explainable baseline |
+| 2 | `02-dtree-tuned.R` | Tuning + 3-fold CV — how much does tuning buy? |
+| 3 | `03-xgboost.R` | XGBoost + 5-fold CV |
+| 4 | `04-bagged-trees.R` | Bagging — middle ground |
+| 5 | `05-model-comparison.R` | Tree vs Random Forest vs XGBoost |
 
 ### Results (holdout / CV comparison)
 
@@ -109,7 +108,7 @@ cd customer-churn
 
 ```r
 source("setup.R")                # installs dependencies
-source("06-model-comparison.R")  # final comparison
+source("05-model-comparison.R")  # final comparison
 ```
 
 **Data:** [Bank Churners on Kaggle](https://www.kaggle.com/sakshigoyal7/credit-card-customers) — 10,127 customers, 19 features (demographics, account, transactions, credit behaviour). Target: `still_customer`.
