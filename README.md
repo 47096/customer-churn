@@ -1,43 +1,106 @@
-# Tidymodels
+# Who will leave next?
 
-Progressive comparison of tree-based models for customer churn prediction — from single decision trees to tuned XGBoost — using the tidymodels framework in R.
+**A retention problem, solved with customer data.**
 
-## Problem
+Churn is quiet until the revenue shows it. I help marketing and CRM teams see **who is about to leave** — early enough to do something — instead of paying full price to win people back later.
 
-Which tree-based algorithm best predicts customer churn, and how much does hyperparameter tuning and ensemble methods improve performance? This project builds 6 models of increasing complexity on the same dataset and compares them head-to-head.
+---
 
-## Approach
+## The stake
 
-The scripts progress from simple to complex, each building on the last:
+Acquiring a customer costs more than keeping one. If a meaningful slice of your base is drifting away every quarter, you are funding growth with a leaky bucket. The question is not “do we have churn?” It is **“who should we talk to this month?”**
 
-| # | Script | What It Does |
-|---|--------|-------------|
-| 1 | `01-baseline-dtree-diabetes.R` | Decision tree on diabetes data — baseline |
-| 2 | `02-dtree-churn.R` | Decision tree on bank churners — same model, bigger dataset |
-| 3 | `03-dtree-tuned.R` | Decision tree + hyperparameter tuning + 3-fold CV |
-| 4 | `04-xgboost.R` | XGBoost + 5-fold CV — direct comparison against decision tree |
-| 5 | `05-bagged-trees.R` | Bagged trees (100 bootstrap samples) — middle ground |
-| 6 | `06-model-comparison.R` | Head-to-head: Decision Tree vs Random Forest vs XGBoost |
+## The story
 
-## Results
+A card portfolio has **10,127 customers** and a retention team that cannot call everyone. Who is most likely to still be a customer — and who is already halfway out the door?
 
-### Churn Prediction — Model Comparison (06-model-comparison)
+I compared models the way a business actually chooses a tool: start simple, then see what ensembles buy you. On the same data:
 
-| Model | Accuracy | Precision | Recall | F1 | AUC | Log Loss |
+- A **single decision tree** is explainable but leaves lift on the table
+- **Random forest** closes most of the gap
+- **Tuned XGBoost** wins on every metric that matters for a save team
+
+**Outcome on this build:**
+- Best model ranks leavers very cleanly (**AUC ~0.99** on holdout)
+- **Transaction behaviour** (`total_trans_amt`) is the strongest signal — not demographics alone
+- Retention gets a **ranked save list**, not another monthly report
+
+> **The commercial idea:** spend save offers on the riskiest valuable customers first. Same budget. Fewer goodbyes.
+
+---
+
+## What that looks like in your world
+
+| You have | I turn it into |
+|----------|----------------|
+| Customer, tenure, and behaviour tables | A **churn risk score** per customer |
+| A save budget / retention offer | A **ranked outreach list** |
+| “Some segment feels sticky” | Model evidence: **what actually predicts leaving** |
+| Mixed tooling opinions in the room | A **head-to-head comparison** you can defend |
+
+**Typical engagement:** define the churn window and save play → build scores on your data → hand over the list, the rules, and a lift plan (holdout included).
+
+**[Talk to me about retention →](https://datafying.co/#contactus)** · [datafying](https://datafying.co/)
+
+---
+
+## Why marketing & CRM leaders bring me in
+
+- I frame the job as **who to save**, not “which algorithm wins Kaggle”
+- I show **what you give up** when you choose a simpler model (so you can own explainability vs lift)
+- Technical detail is there for your data team — commercial story is there for you
+- You leave with something that runs next cycle
+
+---
+
+## Proof of craft *(technical — full depth)*
+
+### Business question
+Which customers will still be `still_customer` — and which model finds them best?
+
+### Method (progressive comparison on one dataset)
+
+| Step | Script | What it tests |
+|------|--------|----------------|
+| 1 | `01-baseline-dtree-diabetes.R` | Decision tree baseline (warm-up) |
+| 2 | `02-dtree-churn.R` | Same model on bank churners |
+| 3 | `03-dtree-tuned.R` | Tuning + 3-fold CV — how much does tuning buy? |
+| 4 | `04-xgboost.R` | XGBoost + 5-fold CV |
+| 5 | `05-bagged-trees.R` | Bagging — middle ground |
+| 6 | `06-model-comparison.R` | Tree vs Random Forest vs XGBoost |
+
+### Results (holdout / CV comparison)
+
+| Model | Accuracy | Precision | Recall | F1 | AUC | Log loss |
 |-------|----------|-----------|--------|-----|-----|----------|
 | Decision Tree | 0.934 | 0.960 | 0.961 | 0.961 | 0.935 | 0.233 |
 | Random Forest | 0.960 | 0.962 | 0.991 | 0.976 | 0.989 | 0.123 |
 | **XGBoost** | **0.966** | **0.972** | **0.989** | **0.980** | **0.990** | **0.100** |
 
-### Key Findings
+**What this means for a save team**
+- XGBoost wins every metric that matters when **missing a leaver is expensive**
+- Tuning a single tree helps a little; **ensembles help a lot**
+- Cross-validation beats one lucky split before you put this in a CRM
 
-- **XGBoost wins** across every metric — accuracy, precision, recall, F1, AUC, and log loss
-- **Tuning helps**: tuned decision tree (03-dtree-tuned) improved accuracy from 0.934 → 0.943 via hyperparameter search
-- **Ensembles beat single trees**: bagged trees (AUC 0.887) outperform a single tree (0.935), but XGBoost (0.990) dominates both
-- **`total_trans_amt`** is the most important feature across all models — recent transaction behaviour is the strongest predictor of churn
-- **Cross-validation** gives more reliable AUC estimates than a single train/test split
+**Signals that predicted churn**
+- **`total_trans_amt`** — recent transaction behaviour dominates
+- Demographics matter less than **activity and credit behaviour** in this data
+- Useful for creative and offer design: *save plays should watch spending drop-off*
 
-## Setup
+### How this ships
+1. Score the base on a schedule (monthly / pre-campaign)
+2. Export **top risk × valuable** segment to CRM / CSM queue
+3. Trigger save offer / human outreach
+4. Hold out a control to **prove retention lift**, not just model scores
+
+### Limits
+- Definition of churn and observation window must match your business
+- Scores drift as products and pricing change — refresh cadence matters
+- A model prioritises who to call; **the save offer still has to be worth taking**
+
+---
+
+## Reproduce the build
 
 ```bash
 git clone https://github.com/47096/customer-churn.git
@@ -45,65 +108,18 @@ cd customer-churn
 ```
 
 ```r
-install.packages(c("tidymodels", "rpart.plot", "vip", "baguette", "xgboost"))
-source("06-model-comparison.R")  # the final comparison
+source("setup.R")                # installs dependencies
+source("06-model-comparison.R")  # final comparison
 ```
 
-## Data
+**Data:** [Bank Churners on Kaggle](https://www.kaggle.com/sakshigoyal7/credit-card-customers) — 10,127 customers, 19 features (demographics, account, transactions, credit behaviour). Target: `still_customer`.
 
-**Bank Churners** — 10,127 customers with 19 features (demographics, transaction history, credit behaviour). Target: `still_customer` (yes/no).
+**Stack:** `tidymodels` · `rpart` · `ranger` · `xgboost` · `vip` · `rpart.plot`
 
-| Feature Group | Examples |
-|--------------|---------|
-| Demographics | age, gender, education, marital status, income |
-| Account | credit limit, months on book, card category |
-| Behaviour | total transaction amount/count, months inactive, contacts |
-| Credit | revolving balance, utilisation ratio, open to buy |
+---
 
-The diabetes dataset (Script 001) uses `mlbench::PimaIndiansDiabetes` — 768 rows, 8 medical features.
+## Next step
 
-## Tech Stack
+If customers are slipping and your team cannot say **who to save first**, that is the engagement I run.
 
-- **tidymodels** — unified modelling framework (splitting, fitting, evaluating)
-- **rpart** — decision tree engine
-- **ranger** — random forest engine
-- **xgboost** — gradient boosting engine
-- **vip** — variable importance plots
-- **rpart.plot** — tree visualisation
-
-## Key Tidymodels Concepts
-
-**Workflow** — tidymodels wraps model specification + formula into a consistent interface:
-
-```r
-model <- decision_tree() %>%
-  set_engine("rpart") %>%
-  set_mode("classification") %>%
-  fit(outcome ~ ., data = train)
-```
-
-**Hyperparameter tuning** — mark parameters with `tune()` then search over a grid:
-
-```r
-tune_spec <- decision_tree(
-  tree_depth = tune(),
-  cost_complexity = tune()
-) %>% set_mode("classification") %>% set_engine("rpart")
-```
-
-**Cross-validation** — `vfold_cv()` splits training data into folds for reliable performance estimates:
-
-```r
-folds <- vfold_cv(train, v = 5)
-cv_results <- fit_resamples(spec, outcome ~ ., resamples = folds)
-```
-
-## References
-
-- [tidymodels documentation](https://www.tidymodels.org/)
-- [XGBoost](https://xgboost.readthedocs.io/)
-- [Bank Churners dataset](https://www.kaggle.com/sakshigoyal7/credit-card-customers)
-
-## License
-
-MIT
+**[Book a conversation →](https://datafying.co/#contactus)** · Customer analytics for retention · [datafying](https://datafying.co/)
